@@ -1,0 +1,13 @@
+# film
+#train: D:\yolov10\my_dataset\test  # train images (relative to 'path') 128 images
+#val: D:\yolov10\my_dataset\test # val images (relative to 'path') 128 images
+#test: D:\yolov10\my_dataset\test # test images (optional)
+
+## film
+train: D:\yolov10\my_dataset\train  # train images (relative to 'path') 128 images
+val: D:\yolov10\my_dataset\valid # val images (relative to 'path') 128 images
+test: D:\yolov10\my_dataset\test # test images (optional)
+
+# Classes
+names:
+  0: film

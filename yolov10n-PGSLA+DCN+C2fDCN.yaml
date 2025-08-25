@@ -1,0 +1,41 @@
+# YOLOv10 + PGSLA attention for all detection scales
+
+nc: 80  # number of classes
+scales:
+  n: [0.33, 0.25, 1024]
+
+backbone:
+  - [-1, 1, DCNv2, [64, 3, 2]]         # 0-P1/2
+  - [-1, 1, DCNv2, [128, 3, 2]]        # 1-P2/4
+  - [-1, 3, C2f_DCN, [128, True]]
+  - [-1, 1, DCNv2, [256, 3, 2]]        # 3-P3/8
+  - [-1, 6, C2f_DCN, [256, True]]
+  - [-1, 1, SCDown, [512, 3, 2]]      # 5-P4/16
+  - [-1, 6, C2f_DCN, [512, True]]
+  - [-1, 1, SCDown, [1024, 3, 2]]     # 7-P5/32
+  - [-1, 3, C2f_DCN, [1024, True]]
+  - [-1, 1, SPPF, [1024, 5]]
+  - [-1, 1, PSA, [1024]]              #10
+
+head:
+  - [-1, 1, nn.Upsample, [None, 2, "nearest"]]
+  - [[-1, 6], 1, Concat, [1]]
+  - [-1, 3, C2f_DCN, [512]]       #13
+
+  - [-1, 1, nn.Upsample, [None, 2, "nearest"]]
+  - [[-1, 4], 1, Concat, [1]]       #15
+  - [-1, 3, C2f_DCN, [256]]         #16
+  - [-1, 1, PGSLA, [256]]           #17  # P3-small attention
+
+  - [-1, 1, DCNv2, [256, 3, 2]]
+  - [[-1, 13], 1, Concat, [1]]
+  - [-1, 3, C2f_DCN, [512]]
+  - [-1, 1, PGSLA, [512]]             # P4-medium attention
+
+  - [-1, 1, SCDown, [512, 3, 2]]
+  - [[-1, 10], 1, Concat, [1]]
+  - [-1, 3, C2fCIB, [1024, True, True]]
+  - [-1, 1, PGSLA, [1024]]            # P5-large attention
+
+  #- [[16, 20, 24], 1, v10Detect, [nc]]
+  - [[17, 21, 25], 1, v10Detect, [nc]]
